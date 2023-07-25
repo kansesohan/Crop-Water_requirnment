@@ -1,0 +1,38 @@
+##Max&Min_Temp_Interpolation_From_IMD_Gridded_CSV
+
+import os
+
+try:
+    import arcpy
+    from arcpy import env
+    from arcpy.sa import *
+    
+    # Set overwrite output to False
+    arcpy.env.overwriteOutput = False
+    
+    # Set environment settings
+    env.workspace = r"E:\\Satara_District_CWR_Sugarcane\\Arcpro\\1.0\\1.0.gdb"
+    env.extent = r"E:\\Satara_District_CWR_Sugarcane\\Shape\\AOI.shp"
+    env.mask = r"E:\\Satara_District_CWR_Sugarcane\\Shape\\AOI.shp"
+    
+    # Variables
+    da = range(1, 365)
+    name = range(1, 365)
+    link = r"E:\\Satara_District_CWR_Sugarcane\\Output\\1.Interpolated_Temperature"
+    
+    # IDW
+    for i, j in zip(da, name):
+        in_features = "Max_Temp_XYTableToPoint.shp"
+        z_field = i  # Update this with the correct field name
+        outIDW = Idw(in_features, i)
+        output_path = os.path.join(link, "max" + str(j) + ".tif")
+        os.makedirs(link, exist_ok=True)  # Create the output folder if it doesn't exist
+        outIDW.save(output_path)
+        print("Potential Evapotranspiration for day", j, "computed")
+        print("Output is saved as", j, "max.tif")
+
+except Exception as err:
+    print(err)
+    
+finally:
+    print("###### Task Completed ###### :)")

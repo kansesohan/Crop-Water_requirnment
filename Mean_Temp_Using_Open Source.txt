@@ -1,0 +1,38 @@
+import os
+import rasterio
+from rasterio.merge import merge
+from rasterio.enums import Resampling
+
+max_temp_folder = "E:/Satara_District_CWR_Sugarcane/Output/1.Max_Temp"
+min_temp_folder = "E:/Satara_District_CWR_Sugarcane/Output/2.Min_Temp"
+output_folder = "E:/Satara_District_CWR_Sugarcane/Output/3.Mean_Temp"
+
+# Create the output folder if it doesn't exist
+os.makedirs(output_folder, exist_ok=True)
+
+max_temp_files = [f for f in os.listdir(max_temp_folder) if f.endswith(".tif")]
+min_temp_files = [f for f in os.listdir(min_temp_folder) if f.endswith(".tif")]
+###Pyton code for Computing Mean Temprature using Open Source
+
+for max_file, min_file in zip(max_temp_files, min_temp_files):
+    max_file_path = os.path.join(max_temp_folder, max_file)
+    min_file_path = os.path.join(min_temp_folder, min_file)
+    output_file_path = os.path.join(output_folder, f"mean{max_file.split('.')[0][3:]}.tif")
+
+    with rasterio.open(max_file_path) as max_ds, rasterio.open(min_file_path) as min_ds:
+        max_temp = max_ds.read(1, masked=True)  # Read max temperature raster data
+        min_temp = min_ds.read(1, masked=True)  # Read min temperature raster data
+
+        # Calculate the mean temperature
+        mean_temp = (max_temp + min_temp) / 2
+
+        # Create a new raster dataset for the mean temperature
+        profile = max_ds.profile
+        profile.update(count=1, dtype=mean_temp.dtype)
+
+        with rasterio.open(output_file_path, "w", **profile) as dst:
+            dst.write(mean_temp, 1)
+
+    print(f"Mean temperature for {max_file} computed and saved as {output_file_path}")
+
+print("###### Task Completed ###### :)")

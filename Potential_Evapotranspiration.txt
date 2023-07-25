@@ -1,0 +1,44 @@
+try:
+    import arcpy
+    from arcpy import env
+    from arcpy.sa import *
+    OverWriteOuput= False
+    
+    #Extent
+    arcpy.env.extent=r"E:\Satara_District_CWR_Sugarcane\Shape\AOI.shp"
+
+    #Mask 
+    arcpy.env.mask=r"E:\Satara_District_CWR_Sugarcane\Shape\AOI.shp"
+    
+    arcpy.env.workspace  = r"E:\Satara_District_CWR_Sugarcane\Output\1.Max_Temp"
+    dd = arcpy.ListFiles("*tif")
+
+    arcpy.env.workspace = r"E:\Satara_District_CWR_Sugarcane\Output\2.Min_Temp"
+    de = arcpy.ListFiles("*tif")
+
+    arcpy.env.workspace = r"E:\Satara_District_CWR_Sugarcane\Output\3.Mean_Temp"
+    df = arcpy.ListFiles("*tif")
+
+    arcpy.env.workspace = r"E:\Satara_District_CWR_Sugarcane\Output\4.Solar_Radiation\esr.tif"
+        
+    name = range(1,366)
+
+    Extra_Radiation = r"E:\Satara_District_CWR_Sugarcane\Output\4.Solar_Radiation\esr.tif"
+
+    link =r"E:\Satara_District_CWR_Sugarcane\Output\5.PET"
+
+    for i, j, k, l, m in zip(dd, de, df, da, name):
+        print(i)
+        print(j)
+        print(k)
+        print(l)
+        out_rc_multi_raster=((0.023) * Raster(l) * SquareRoot(Raster(i)-Raster(j)) * (Raster(k)+17.8))
+        out_rc_multi_raster.save(link + "\\" + m + "PE.tif")
+        print("Potential Evapotranspiration for day", m, "computed")
+        print("Output is saved as", m, "PE.tif")
+
+except Exception as err:
+    print(err)
+    
+finally:
+    print("###### Task Completed ###### :)")
